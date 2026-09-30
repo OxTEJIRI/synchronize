@@ -173,17 +173,35 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
           />
         )}
 
+        <defs>
+          <radialGradient id="trial-glow">
+            <stop offset="0%" stopColor="#C4A35A" stopOpacity="0.55" />
+            <stop offset="45%" stopColor="#C4A35A" stopOpacity="0.16" />
+            <stop offset="100%" stopColor="#C4A35A" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
         {NODES.map((n, i) => {
           const lit = aware.includes(i);
+          const delay = era === "sp" ? { transitionDelay: `${i * 50}ms` } : undefined;
           return (
-            <circle
-              key={i}
-              cx={n.x}
-              cy={n.y}
-              r={9}
-              className={`trial__node ${lit ? "is-lit" : ""}`}
-              style={era === "sp" ? { transitionDelay: `${i * 50}ms` } : undefined}
-            />
+            <g key={i}>
+              <circle
+                cx={n.x}
+                cy={n.y}
+                r={30}
+                fill="url(#trial-glow)"
+                className={`trial__glow ${lit ? "is-lit" : ""}`}
+                style={delay}
+              />
+              <circle
+                cx={n.x}
+                cy={n.y}
+                r={9}
+                className={`trial__node ${lit ? "is-lit" : ""}`}
+                style={delay}
+              />
+            </g>
           );
         })}
 

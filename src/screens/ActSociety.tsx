@@ -95,6 +95,7 @@ export function ActSociety({ session }: { session: Session }) {
             {VF_IDS.map((id) => (
               <VFChip
                 key={id}
+                id={id}
                 label={vfCopy[id].label}
                 help={vfCopy[id].help}
                 selected={vfs.includes(id)}

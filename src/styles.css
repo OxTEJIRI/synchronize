@@ -598,3 +598,97 @@ button {
   .screen, .ticker__item { animation-duration: 1ms; }
   .trial__node, .trial__token, .trial__mesh line { transition-duration: 1ms !important; transition-delay: 0s !important; }
 }
+
+/* ---------- visual pass ---------- */
+
+/* Act I dial */
+.dial { width: min(440px, 100%); height: auto; aspect-ratio: 1; }
+.dial__inner--faint { stroke-dasharray: 1 5; opacity: 0.7; }
+.dial__map path {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  opacity: 0.2;
+  vector-effect: non-scaling-stroke;
+}
+.dial__map .dial__cross { opacity: 0.1; }
+.dial__labelpath { fill: none; stroke: none; }
+.dial__label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  fill: var(--cream-dim);
+  pointer-events: none;
+  transition: fill 320ms var(--ease);
+}
+.dial__arc:hover .dial__label { fill: var(--cream); }
+.dial__arc.is-selected .dial__label { fill: var(--gold-hot); }
+.dial__halo {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 14;
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+  transition: opacity 400ms var(--ease);
+}
+.dial__arc.is-selected .dial__halo { opacity: 0.55; }
+.dial__arc.is-selected .dial__stroke { filter: drop-shadow(0 0 4px rgba(224, 197, 122, 0.9)); }
+.dial__era { padding: 0 72px; }
+
+/* Act I trial glow */
+.trial__glow { opacity: 0; pointer-events: none; transition: opacity 400ms var(--ease); }
+.trial__glow.is-lit { opacity: 1; }
+
+/* Icons */
+.icon { flex: none; display: block; }
+.chip { min-height: 108px; }
+.chip__head { display: flex; align-items: center; gap: 10px; }
+.chip .icon { color: var(--gold); }
+.chip.is-selected .icon { color: var(--bg); }
+.action { flex-direction: row; justify-content: flex-start; align-items: center; gap: 14px; }
+.action .icon { color: var(--gold); }
+.action--idle .icon { color: var(--cream-dim); }
+.action__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sscchip { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Lifeline plaque */
+.plaque { position: relative; overflow: hidden; }
+.plaque::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.plaque > :not(.plaque__rings) { position: relative; z-index: 1; }
+.plaque__rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 135%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1;
+  opacity: 0.13;
+  pointer-events: none;
+  animation: spin 240s linear infinite;
+}
+.plaque__name { font-size: clamp(48px, 11vw, 72px); line-height: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .plaque__rings { animation: none; }
+  .dial__halo, .trial__glow, .dial__label { transition-duration: 1ms; }
+}
+
+@keyframes plaque-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.plaque__rings { animation-name: plaque-spin; }

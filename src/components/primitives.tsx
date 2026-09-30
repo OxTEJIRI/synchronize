@@ -1,4 +1,6 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes } from "react";
+import type { VF } from "../state/types";
+import { Icon } from "./Icons";
 
 interface HairlineButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "ghost" | "gold";
@@ -41,6 +43,7 @@ export function TypeLockup({ size = "sm" }: { size?: "sm" | "hero" }) {
 }
 
 interface VFChipProps {
+  id: VF;
   label: string;
   help: string;
   selected: boolean;
@@ -48,7 +51,7 @@ interface VFChipProps {
   onToggle: () => void;
 }
 
-export function VFChip({ label, help, selected, shaking, onToggle }: VFChipProps) {
+export function VFChip({ id, label, help, selected, shaking, onToggle }: VFChipProps) {
   return (
     <button
       type="button"
@@ -56,7 +59,10 @@ export function VFChip({ label, help, selected, shaking, onToggle }: VFChipProps
       aria-pressed={selected}
       onClick={onToggle}
     >
-      <span className="chip__label">{label}</span>
+      <span className="chip__head">
+        <Icon id={id} size={24} />
+        <span className="chip__label">{label}</span>
+      </span>
       <span className="chip__help">{help}</span>
     </button>
   );

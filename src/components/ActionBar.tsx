@@ -2,6 +2,7 @@ import { actII, energyCopy } from "../copy/content";
 import { MAX_ACTORS } from "../state/simulation";
 import { doAction } from "../state/store";
 import type { Session, UserAction, VF } from "../state/types";
+import { Icon } from "./Icons";
 
 const ACTIONS: { action: UserAction; vf: VF; copy: keyof typeof actII.actions }[] = [
   { action: "parent", vf: "parenting", copy: "parenting" },
@@ -30,13 +31,19 @@ export function ActionBar({ session }: { session: Session }) {
           disabled={disabled(x.action)}
           onClick={() => doAction(x.action)}
         >
-          <span className="action__label">{actII.actions[x.copy].label}</span>
-          <span className="action__hint">{actII.actions[x.copy].hint}</span>
+          <Icon id={x.vf} size={26} />
+          <span className="action__text">
+            <span className="action__label">{actII.actions[x.copy].label}</span>
+            <span className="action__hint">{actII.actions[x.copy].hint}</span>
+          </span>
         </button>
       ))}
       <button type="button" className="action action--idle" onClick={() => doAction("idle")}>
-        <span className="action__label">{actII.actions.idle.label}</span>
-        <span className="action__hint">{actII.actions.idle.hint}</span>
+        <Icon id="idle" size={26} />
+        <span className="action__text">
+          <span className="action__label">{actII.actions.idle.label}</span>
+          <span className="action__hint">{actII.actions.idle.hint}</span>
+        </span>
       </button>
     </div>
   );

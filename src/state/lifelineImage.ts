@@ -86,6 +86,10 @@ export async function renderLifelinePng(d: LifelineData): Promise<Blob | null> {
   ctx.strokeStyle = GOLD;
   ctx.lineWidth = 2;
   ctx.strokeRect(cardX, cardY, cardW, cardH);
+  ctx.globalAlpha = 0.3;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(cardX + 12, cardY + 12, cardW - 24, cardH - 24);
+  ctx.globalAlpha = 1;
 
   const x = cardX + pad;
   let y = cardY + pad + 14;

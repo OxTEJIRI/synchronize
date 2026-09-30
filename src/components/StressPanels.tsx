@@ -2,6 +2,7 @@ import { actIII, stressCopy, vfs as vfCopy } from "../copy/content";
 import { setArchitectBias, setStress } from "../state/store";
 import type { Session, Stress } from "../state/types";
 import { STRESSES } from "../state/types";
+import { Icon } from "./Icons";
 import { Knob } from "./primitives";
 
 export function StressToggle({
@@ -54,6 +55,7 @@ export function StressList({ session }: { session: Session }) {
         <div className="sscchips__row">
           {session.vfs.map((v) => (
             <span key={v} className="sscchip">
+              <Icon id={v} size={16} />
               {vfCopy[v].label}
             </span>
           ))}

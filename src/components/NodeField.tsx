@@ -79,13 +79,13 @@ export function NodeField({ actors, reserve, stresses }: Props) {
       if (reduced.matches) return;
       const now = performance.now();
       for (const t of ts) {
-        const n = Math.min(8, Math.max(1, Math.round(t.amount * 4)));
+        const n = Math.min(10, Math.max(2, Math.round(t.amount * 6)));
         for (let i = 0; i < n && particles.length < MAX_PARTICLES; i++) {
           particles.push({
             from: t.from,
             to: t.to,
-            start: now + i * 90 + Math.random() * 200,
-            dur: 1800 + Math.random() * 900,
+            start: now + i * 110 + Math.random() * 160,
+            dur: 1700 + Math.random() * 1000,
           });
         }
       }
@@ -134,6 +134,27 @@ export function NodeField({ actors, reserve, stresses }: Props) {
       }
 
       ctx.clearRect(0, 0, w, h);
+
+      // Guide rings and hour ticks behind the field.
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = LINE;
+      for (const rad of [0.27, 0.41]) {
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, m * rad * 1.35, m * rad, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      for (let k = 0; k < 24; k++) {
+        const ang = (k / 24) * Math.PI * 2;
+        const len = k % 2 === 0 ? 8 : 4;
+        const ox = Math.cos(ang) * m * 0.41 * 1.35;
+        const oy = Math.sin(ang) * m * 0.41;
+        const nx = Math.cos(ang) * (m * 0.41 * 1.35 + len);
+        const ny = Math.sin(ang) * (m * 0.41 + len);
+        ctx.beginPath();
+        ctx.moveTo(cx + ox, cy + oy);
+        ctx.lineTo(cx + nx, cy + ny);
+        ctx.stroke();
+      }
 
       // Reserve ring.
       ctx.beginPath();
@@ -186,6 +207,18 @@ export function NodeField({ actors, reserve, stresses }: Props) {
           ? GOLD_HOT
           : `rgb(${mix(mix(IDLE[0], GOLD[0], t), DANGER[0], tint) | 0}, ${mix(mix(IDLE[1], GOLD[1], t), DANGER[1], tint) | 0}, ${mix(mix(IDLE[2], GOLD[2], t), DANGER[2], tint) | 0})`;
         ctx.globalAlpha = st.flatten ? 0.5 : 1;
+        // Soft glow on active nodes; idle nodes stay dark.
+        const glow = a.isYou ? 0.55 : t > 0.3 ? t * 0.4 : 0;
+        if (glow > 0) {
+          const gr = r * (a.isYou ? 4.4 : 3.6);
+          const g = ctx.createRadialGradient(p.x, p.y, r * 0.4, p.x, p.y, gr);
+          g.addColorStop(0, `rgba(196, 163, 90, ${glow})`);
+          g.addColorStop(1, "rgba(196, 163, 90, 0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
+          ctx.fill();
+        }
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fillStyle = fill;
@@ -210,8 +243,14 @@ export function NodeField({ actors, reserve, stresses }: Props) {
         if (a.isYou) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, r + 6, 0, Math.PI * 2);
-          ctx.strokeStyle = LINE_STRONG;
+          ctx.strokeStyle = GOLD_HOT;
           ctx.stroke();
+          ctx.beginPath();
+          ctx.setLineDash([2, 4]);
+          ctx.arc(p.x, p.y, r + 12, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(224, 197, 122, 0.5)";
+          ctx.stroke();
+          ctx.setLineDash([]);
         }
         ctx.fillStyle = a.isYou ? CREAM : CREAM_DIM;
         ctx.font = a.isYou
@@ -225,25 +264,54 @@ export function NodeField({ actors, reserve, stresses }: Props) {
         );
       }
 
-      // Particles: loser -> winner.
+      // Particles: loser -> winner, with a hairline edge and a short tail.
       particles = particles.filter((q) => now < q.start + q.dur);
+      const edges = new Set<string>();
+      for (const q of particles) {
+        if (now < q.start) continue;
+        const key = q.from + ">" + q.to;
+        if (edges.has(key)) continue;
+        edges.add(key);
+        const a = anchor(q.from, q.to);
+        const b = anchor(q.to, q.from);
+        if (!a || !b) continue;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = "rgba(196, 163, 90, 0.22)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
       for (const q of particles) {
         if (now < q.start) continue;
         const a = anchor(q.from, q.to);
         const b = anchor(q.to, q.from);
         if (!a || !b) continue;
         const u = (now - q.start) / q.dur;
-        const e = u * u * (3 - 2 * u);
-        ctx.beginPath();
-        ctx.arc(mix(a.x, b.x, e), mix(a.y, b.y, e), 2, 0, Math.PI * 2);
-        ctx.fillStyle = GOLD_HOT;
-        ctx.globalAlpha = 1 - Math.abs(u - 0.5) * 0.9;
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        const fade = Math.min(1, u * 6, (1 - u) * 6);
+        for (let k = 3; k >= 0; k--) {
+          const uu = Math.max(0, u - k * 0.03);
+          const e = uu * uu * (3 - 2 * uu);
+          const x = mix(a.x, b.x, e);
+          const y = mix(a.y, b.y, e);
+          if (k === 0) {
+            const g = ctx.createRadialGradient(x, y, 0, x, y, 9);
+            g.addColorStop(0, `rgba(224, 197, 122, ${0.55 * fade})`);
+            g.addColorStop(1, "rgba(224, 197, 122, 0)");
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(x, y, 9, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.beginPath();
+          ctx.arc(x, y, k === 0 ? 2.8 : 2.2 - k * 0.4, 0, Math.PI * 2);
+          ctx.fillStyle = GOLD_HOT;
+          ctx.globalAlpha = fade * (k === 0 ? 1 : 0.5 / k);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
       }
 
-      // Faint hub guides.
-      ctx.strokeStyle = LINE;
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);

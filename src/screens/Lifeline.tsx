@@ -35,6 +35,29 @@ function legacyCopy(text: string): boolean {
   return ok;
 }
 
+function Watermark() {
+  return (
+    <svg className="plaque__rings" viewBox="0 0 400 400" aria-hidden="true">
+      {[190, 150, 110, 70].map((r) => (
+        <circle key={r} cx="200" cy="200" r={r} />
+      ))}
+      {Array.from({ length: 12 }, (_, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        return (
+          <line
+            key={i}
+            x1={200 + Math.cos(a) * 178}
+            y1={200 + Math.sin(a) * 178}
+            x2={200 + Math.cos(a) * 190}
+            y2={200 + Math.sin(a) * 190}
+          />
+        );
+      })}
+      <path d="M200 200V96M200 200l52 30" />
+    </svg>
+  );
+}
+
 export function Lifeline({ session }: { session: Session }) {
   const data = lifelineData(session);
   const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
@@ -85,6 +108,7 @@ export function Lifeline({ session }: { session: Session }) {
   return (
     <section className="screen lifeline">
       <article className="plaque">
+        <Watermark />
         <p className="label label--gold">{lifeline.kicker}</p>
         <h1 className="plaque__name">{data.name}</h1>
         <dl className="plaque__rows">
