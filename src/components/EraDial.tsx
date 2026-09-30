@@ -1,14 +1,21 @@
+import { useMemo } from "react";
 import { actI, actIStrings } from "../copy/content";
 import type { Era } from "../state/types";
 import { ERAS } from "../state/types";
-import { worldMapPath } from "./worldMap";
+import { globe } from "./worldMap";
 
 const SIZE = 380;
 const C = SIZE / 2;
 const R = 124;
 const GAP = 7; // degrees between arcs
-const MAP_W = 232;
-const MAP = worldMapPath(MAP_W);
+const GLOBE_R = R - 21;
+/** Each era turns the globe to a different face of the world: [longitude, latitude]. */
+const FACING: Record<Era, [number, number]> = {
+  tribe: [22, 12],
+  nation: [12, 34],
+  web3: [-72, 12],
+  sp: [112, 8],
+};
 
 const pt = (r: number, deg: number) => {
   const a = ((deg - 90) * Math.PI) / 180;
@@ -28,6 +35,7 @@ interface Props {
 
 export function EraDial({ era, visited, onSelect }: Props) {
   const info = actI.eras[era];
+  const g = useMemo(() => globe(FACING[era][0], FACING[era][1], GLOBE_R), [era]);
   return (
     <div className="dial">
       <svg
@@ -37,20 +45,30 @@ export function EraDial({ era, visited, onSelect }: Props) {
         className="dial__svg"
       >
         <defs>
-          <clipPath id="dial-clip">
-            <circle cx={C} cy={C} r={R - 20} />
-          </clipPath>
+          <radialGradient id="dial-sphere" cx="38%" cy="32%" r="75%">
+            <stop offset="0%" stopColor="#C4A35A" stopOpacity="0.16" />
+            <stop offset="60%" stopColor="#C4A35A" stopOpacity="0.03" />
+            <stop offset="100%" stopColor="#070706" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
         <circle cx={C} cy={C} r={R - 18} className="dial__inner" />
         <circle cx={C} cy={C} r={R - 46} className="dial__inner dial__inner--faint" />
         <circle cx={C} cy={C} r={R + 14} className="dial__outer" />
 
-        <g clipPath="url(#dial-clip)" className="dial__map" aria-hidden="true">
-          <g transform={`translate(${C - MAP_W / 2} ${C - MAP_W / 4})`}>
-            <path d={MAP} />
+        <g className="dial__globe" transform={`translate(${C} ${C})`} aria-hidden="true">
+          <circle r={GLOBE_R} fill="url(#dial-sphere)" className="dial__sphere" />
+          <g key={era} className="dial__spin">
+            <path d={g.grid} className="dial__grid" />
+            <path d={g.land} className="dial__land" />
           </g>
-          <path d={`M ${C - R} ${C} H ${C + R} M ${C} ${C - R} V ${C + R}`} className="dial__cross" />
+          <circle r={GLOBE_R} className="dial__rim" />
+          <ellipse
+            rx={GLOBE_R + 9}
+            ry={(GLOBE_R + 9) * 0.26}
+            className="dial__orbit"
+            transform="rotate(-18)"
+          />
         </g>
 
         {ERAS.map((e, i) => {

@@ -3,6 +3,7 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import { actI, actIStrings, common } from "../copy/content";
 import type { Era } from "../state/types";
 import { HairlineButton } from "./primitives";
+import { TrialBackdrop } from "./TrialBackdrop";
 
 const W = 600;
 const H = 320;
@@ -114,6 +115,8 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
         onPointerUp={() => (dragging.current = false)}
         onPointerLeave={() => (dragging.current = false)}
       >
+        <TrialBackdrop era={era} />
+
         {era === "sp" && (
           <g className={`trial__mesh ${aware.length ? "is-drawn" : ""}`}>
             {MESH.map(([a, b], i) => (

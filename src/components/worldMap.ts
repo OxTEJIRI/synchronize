@@ -32,3 +32,87 @@ export function worldMapPath(w: number): string {
         .join("") + "Z",
   ).join("");
 }
+
+/* ---------- dot-matrix renderers ---------- */
+
+function inPoly(lon: number, lat: number, poly: [number, number][]): boolean {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    if (yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+export function isLand(lon: number, lat: number): boolean {
+  return LAND.some((p) => inPoly(lon, lat, p));
+}
+
+const f = (n: number) => n.toFixed(1);
+
+/** Land as dots on a flat map, `w` wide and `w/2` tall. Draw with a round-capped stroke. */
+export function flatDots(w: number, step = 4): string {
+  let d = "";
+  for (let lat = 82; lat >= -58; lat -= step) {
+    for (let lon = -180; lon < 180; lon += step) {
+      if (isLand(lon, lat)) d += `M${f(((lon + 180) / 360) * w)} ${f(((90 - lat) / 180) * (w / 2))}h0`;
+    }
+  }
+  return d;
+}
+
+/** Flat graticule every 30 degrees. */
+export function flatGrid(w: number): string {
+  const h = w / 2;
+  let d = "";
+  for (let lon = -180; lon <= 180; lon += 30) d += `M${f(((lon + 180) / 360) * w)} 0V${f(h)}`;
+  for (let lat = -60; lat <= 60; lat += 30) d += `M0 ${f(((90 - lat) / 180) * h)}H${f(w)}`;
+  return d;
+}
+
+/** Orthographic globe centred on (lon0, lat0), radius R, around the origin. */
+export function globe(lon0: number, lat0: number, R: number, step = 3.4) {
+  const rad = Math.PI / 180;
+  const p0 = lat0 * rad;
+  const proj = (lon: number, lat: number) => {
+    const phi = lat * rad;
+    const lam = (lon - lon0) * rad;
+    const c = Math.sin(p0) * Math.sin(phi) + Math.cos(p0) * Math.cos(phi) * Math.cos(lam);
+    return {
+      vis: c > 0.03,
+      x: R * Math.cos(phi) * Math.sin(lam),
+      y: -R * (Math.cos(p0) * Math.sin(phi) - Math.sin(p0) * Math.cos(phi) * Math.cos(lam)),
+    };
+  };
+
+  let land = "";
+  for (let lat = 84; lat >= -60; lat -= step) {
+    const ls = step / Math.max(Math.cos(lat * rad), 0.35);
+    for (let lon = -180; lon < 180; lon += ls) {
+      if (!isLand(lon, lat)) continue;
+      const p = proj(lon, lat);
+      if (p.vis) land += `M${f(p.x)} ${f(p.y)}h0`;
+    }
+  }
+
+  let grid = "";
+  const line = (pts: [number, number][]) => {
+    let pen = false;
+    for (const [lon, lat] of pts) {
+      const p = proj(lon, lat);
+      if (!p.vis) pen = false;
+      else {
+        grid += `${pen ? "L" : "M"}${f(p.x)} ${f(p.y)}`;
+        pen = true;
+      }
+    }
+  };
+  for (let lon = -180; lon < 180; lon += 30) {
+    line(Array.from({ length: 73 }, (_, i) => [lon, -90 + i * 2.5] as [number, number]));
+  }
+  for (let lat = -60; lat <= 60; lat += 30) {
+    line(Array.from({ length: 145 }, (_, i) => [-180 + i * 2.5, lat] as [number, number]));
+  }
+  return { land, grid };
+}
