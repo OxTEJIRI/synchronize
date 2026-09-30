@@ -172,6 +172,23 @@ export const lifeline = {
   again: "Begin another instance",
   none: "None armed",
   about: "What is Society Protocol?",
+  title: "Lifeline",
+  fields: {
+    instance: "Instance",
+    birth: "Birth",
+    functions: "Functions",
+    stress: "Stress tests",
+    note: "Note",
+  },
+  noteLabel: "Edit note",
+  copied: "Copied",
+  copyFailed: "Copy failed",
+  eventPlaceholder: "One last line for the Timeline",
+  eventSubmit: "Write",
+  eventCancel: "Cancel",
+  sealed: "Lifeline sealed.",
+  summaryHeader: (name: string) => `LIFELINE — ${name}`,
+  imageAlt: "Lifeline card preview",
 };
 
 export const about = {
@@ -182,7 +199,34 @@ export const about = {
     home: "https://societyprotocol.io/",
     whitepaper: "https://societyprotocol.io/whitepaper/",
     glossary: "https://societyprotocol.io/glossary/",
+    repo: "https://github.com/OxTEJIRI/synchronize",
   },
+  linkLabels: {
+    home: "societyprotocol.io",
+    whitepaper: "Whitepaper",
+    glossary: "Glossary",
+    repo: "GitHub repository",
+  },
+  whatTitle: "What you just used",
+  what: "A short interpretive workshop. You named an Actor, walked four eras of human coordination, minted a Synchronized State, watched Energy move, broke it on purpose, and left a Lifeline. It is a toy built from public concepts. It is not the protocol.",
+  tracksTitle: "Three tracks, three acts",
+  tracks: [
+    { act: "Act I · Clock", track: "Philosophical and historical context on human coordination" },
+    { act: "Act II · Society and Energy", track: "A hopeful vision of what Society Protocol could change" },
+    { act: "Act III · Break", track: "An honest look at its trade-offs and flaws" },
+  ],
+  termsTitle: "Terms, one sentence each",
+  terms: [
+    { term: "Actor", def: "A participant in an instance, named at its Birth Event." },
+    { term: "Energy", def: "The zero-sum, explicit measure of social value inside an instance." },
+    { term: "Timeline", def: "The ordered public record of everything that happened." },
+    { term: "SSC", def: "The Synchronized Social Contract: the explicit ruleset every Actor implicitly accepts." },
+    { term: "Value Function", def: "A modular way Energy redistributes, such as Hunting or Curation." },
+    { term: "Synchronized State", def: "A society whose Actors share one identity, value system and record of events." },
+  ],
+  linksTitle: "Sources",
+  simplification:
+    "The simulation is a simplification. Its numbers are invented for illustration, and no dates or tokenomics here come from the official roadmap.",
 };
 
 export const common = {
@@ -232,13 +276,6 @@ export const resume = {
   as: (name: string) => `Resume as ${name}`,
 };
 
-export const breakStub = {
-  kicker: "Act III · Break It",
-  title: "The same instance. Worse assumptions.",
-  body: "The stress toggles arrive in the next build.",
-  back: "Back to Energy",
-};
-
 export const societyCopy = {
   namePrefixes: ["AURORA", "KEPLER", "HELIX", "ORION", "LYRA", "VEGA", "NOVA", "CASSINI", "TYCHO", "ARGO"],
   chooseRange: "Choose three to six.",
@@ -278,4 +315,27 @@ export const simEvents = {
   governWon: (who: string) => `${who}'s rule held`,
   governLost: (who: string) => `${who}'s rule was slashed`,
   idle: (who: string) => `${who} went idle`,
+};
+
+export const stressCopy = {
+  idle: "Arm a stress to read what it breaks.",
+  activeLabel: "Armed",
+  togglesLabel: "Stress tests",
+  sscLabel: "SSC",
+  architectBias: "Architect bias",
+  architectHelp: "Share of the 2% skim rerouted to the Founding set",
+  trackA: "A",
+  trackB: "B",
+  ghostNote: "Hidden pool",
+  foundingSet: "Founding set",
+  battery: "The Core",
+};
+
+export const stressEvents = {
+  armed: (label: string) => `STRESS  ${label} armed.`,
+  disarmed: (label: string) => `${label} disarmed.`,
+  captureDraw: (n: number) => `STRESS  The Core drew ${n.toFixed(1)}E from everyone else.`,
+  foundingDraw: (n: number) => `STRESS  The Founding set drew ${n.toFixed(1)}E.`,
+  farmed: (a: string, b: string) => `${a} farmed ${b}`,
+  unbound: "unbound",
 };

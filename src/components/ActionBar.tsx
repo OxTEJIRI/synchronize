@@ -14,7 +14,7 @@ export function ActionBar({ session }: { session: Session }) {
   const you = session.actors.find((a) => a.isYou);
   const disabled = (a: UserAction) => {
     if (!you) return true;
-    if (a === "parent") return session.actors.length + session.pendingChildren >= MAX_ACTORS || you.energy < 0.8;
+    if (a === "parent") return session.actors.filter((x) => !x.isGhost).length + session.pendingChildren >= MAX_ACTORS || you.energy < 0.8;
     if (a === "govern") return session.locks.length > 0 || you.energy < 1;
     return false;
   };

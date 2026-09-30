@@ -1,13 +1,16 @@
 import { useEffect, useRef } from "react";
 import { energyCopy } from "../copy/content";
+import { coreIds, FOUNDING_IDS } from "../state/simulation";
 import { onTransfers } from "../state/store";
-import type { Actor } from "../state/types";
+import type { Actor, Stress } from "../state/types";
 import { RESERVE_ID } from "../state/types";
 
 // Same values as the tokens in tokens.css; canvas cannot read CSS variables cheaply.
 const IDLE: [number, number, number] = [0x2a, 0x27, 0x1f];
 const GOLD: [number, number, number] = [0xc4, 0xa3, 0x5a];
 const GOLD_HOT = "#E0C57A";
+const DANGER: [number, number, number] = [0xb5, 0x6a, 0x3a];
+const DANGER_CSS = "#B56A3A";
 const CREAM = "#E8DCBA";
 const CREAM_DIM = "rgba(232, 220, 186, 0.62)";
 const LINE = "rgba(232, 220, 186, 0.12)";
@@ -25,6 +28,7 @@ interface Particle {
 interface Props {
   actors: Actor[];
   reserve: number;
+  stresses: Record<Stress, boolean>;
 }
 
 function hash(id: string): number {
@@ -37,13 +41,15 @@ function mix(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export function NodeField({ actors, reserve }: Props) {
+export function NodeField({ actors, reserve, stresses }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const actorsRef = useRef(actors);
   const reserveRef = useRef(reserve);
   actorsRef.current = actors;
   reserveRef.current = reserve;
+  const stressRef = useRef(stresses);
+  stressRef.current = stresses;
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -93,11 +99,18 @@ export function NodeField({ actors, reserve }: Props) {
       const reserveR = m * 0.13;
 
       // Target layout: YOU at centre, everyone else on two loose rings.
-      const others = list.filter((a) => !a.isYou);
+      const st = stressRef.current;
+      const others = list.filter((a) => !a.isYou && !a.isGhost);
       const inner = others.filter((_, i) => i % 2 === 0);
       const outer = others.filter((_, i) => i % 2 === 1);
       const target = new Map<string, { x: number; y: number }>();
       target.set(list.find((a) => a.isYou)?.id ?? "you", { x: cx, y: cy });
+      list
+        .filter((a) => a.isGhost)
+        .forEach((g, k, all) => {
+          const ang = Math.PI / 2 + (k - (all.length - 1) / 2) * 0.9;
+          target.set(g.id, { x: cx + Math.cos(ang) * 34, y: cy + Math.sin(ang) * 34 });
+        });
       const place = (group: Actor[], radius: number, phase: number) =>
         group.forEach((a, k) => {
           const j = hash(a.id);
@@ -153,20 +166,47 @@ export function NodeField({ actors, reserve }: Props) {
       };
 
       // Nodes.
+      const core = st.capture ? coreIds(list) : [];
       for (const a of list) {
         const p = pos.get(a.id);
         if (!p) continue;
+        if (a.isGhost) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4 + 1.5 * Math.sqrt(a.energy), 0, Math.PI * 2);
+          ctx.strokeStyle = DANGER_CSS;
+          ctx.setLineDash([2, 2]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          continue;
+        }
         const r = (a.isYou ? 4 : 3) + 2.2 * Math.sqrt(Math.max(0, a.energy)) * (a.isYou ? 1.15 : 1);
         const t = Math.min(1, Math.max(0, a.activity));
+        const tint = a.fork && st.fork ? 0.6 : 0;
         const fill = a.isYou
           ? GOLD_HOT
-          : `rgb(${mix(IDLE[0], GOLD[0], t)|0}, ${mix(IDLE[1], GOLD[1], t)|0}, ${mix(IDLE[2], GOLD[2], t)|0})`;
+          : `rgb(${mix(mix(IDLE[0], GOLD[0], t), DANGER[0], tint) | 0}, ${mix(mix(IDLE[1], GOLD[1], t), DANGER[1], tint) | 0}, ${mix(mix(IDLE[2], GOLD[2], t), DANGER[2], tint) | 0})`;
+        ctx.globalAlpha = st.flatten ? 0.5 : 1;
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fillStyle = fill;
         ctx.fill();
         ctx.strokeStyle = a.isYou ? GOLD_HOT : LINE_STRONG;
         ctx.stroke();
+        ctx.globalAlpha = 1;
+        if (core.includes(a.id)) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r + 4, 0, Math.PI * 2);
+          ctx.strokeStyle = DANGER_CSS;
+          ctx.stroke();
+        }
+        if (st.architects && FOUNDING_IDS.includes(a.id)) {
+          ctx.beginPath();
+          ctx.setLineDash([2, 3]);
+          ctx.arc(p.x, p.y, r + 4, 0, Math.PI * 2);
+          ctx.strokeStyle = GOLD_HOT;
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
         if (a.isYou) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, r + 6, 0, Math.PI * 2);
@@ -179,7 +219,7 @@ export function NodeField({ actors, reserve }: Props) {
           : '10px "IBM Plex Sans", sans-serif';
         ctx.textAlign = "center";
         ctx.fillText(
-          a.isYou ? energyCopy.you(a.name).toUpperCase() : a.name,
+          a.isYou ? energyCopy.you(a.name).toUpperCase() : st.flatten ? "◦" : a.name,
           p.x,
           p.y + r + (a.isYou ? 22 : 13),
         );

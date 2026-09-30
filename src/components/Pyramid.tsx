@@ -1,8 +1,9 @@
-import { energyCopy } from "../copy/content";
+import { energyCopy, stressCopy } from "../copy/content";
 import type { Session } from "../state/types";
 
 export function Pyramid({ session }: { session: Session }) {
-  const sorted = [...session.actors].sort((a, b) => b.energy - a.energy);
+  const ghostPool = session.actors.filter((a) => a.isGhost).reduce((sum, a) => sum + a.energy, 0);
+  const sorted = session.actors.filter((a) => !a.isGhost).sort((a, b) => b.energy - a.energy);
   const n = sorted.length;
   const size = Math.ceil(n / 5);
   const tiers = energyCopy.tiers
@@ -20,7 +21,7 @@ export function Pyramid({ session }: { session: Session }) {
   const me = sorted.find((a) => a.isYou);
   const rank = me ? sorted.indexOf(me) + 1 : n;
   const locked = session.locks.reduce((s, l) => s + l.amount, 0);
-  const total = sorted.reduce((s, a) => s + a.energy, 0) + session.reserve + locked;
+  const total = sorted.reduce((s, a) => s + a.energy, 0) + session.reserve + locked + ghostPool;
 
   return (
     <div className="pyramid">
@@ -42,6 +43,11 @@ export function Pyramid({ session }: { session: Session }) {
         {energyCopy.reserveShort(session.reserve)}
         {locked > 0 && <> · {energyCopy.locked(locked)}</>}
       </p>
+      {session.stresses.sybil && (
+        <p className="pyramid__meta is-danger">
+          {stressCopy.ghostNote} {ghostPool.toFixed(1)}E
+        </p>
+      )}
       <p className="pyramid__meta">{energyCopy.total(total)}</p>
     </div>
   );

@@ -1,9 +1,10 @@
 import { useSyncExternalStore } from "react";
-import { events as ev, simEvents } from "../copy/content";
+import { events as ev, lifeline, simEvents } from "../copy/content";
 import { vfs as vfCopy } from "../copy/content";
-import { loadSession, saveSession } from "./persist";
-import { applyAction, initActors, RESERVE_START, stepTick } from "./simulation";
-import type { Era, Route, Session, TimelineEvent, Transfer, UserAction, VF } from "./types";
+import { archiveLifeline, loadSession, saveSession } from "./persist";
+import { lifelineData } from "./lifeline";
+import { applyAction, applyStress, initActors, RESERVE_START, stepTick } from "./simulation";
+import type { Era, Route, Session, Stress, TimelineEvent, Transfer, UserAction, VF } from "./types";
 import { ERAS } from "./types";
 
 const TICK_MS = 1800;
@@ -83,6 +84,7 @@ export function createSession(actorName: string): void {
     locks: [],
     pendingChildren: 0,
     userActions: 0,
+    armedOrder: [],
   });
 }
 
@@ -160,6 +162,16 @@ export function mintSociety(ssc: Ssc): void {
     locks: [],
     pendingChildren: 0,
     userActions: 0,
+    armedOrder: [],
+    architectBias: 0,
+    stresses: {
+      capture: false,
+      predation: false,
+      sybil: false,
+      flatten: false,
+      fork: false,
+      architects: false,
+    },
     paused: false,
     visited: session.visited.includes("energy") ? session.visited : [...session.visited, "energy"],
   };
@@ -185,3 +197,47 @@ export function setPaused(paused: boolean): void {
   commit({ ...session, paused });
 }
 
+
+/* ---------- Act III ---------- */
+
+export function setStress(id: Stress, on: boolean): void {
+  if (!session || session.actors.length === 0) return;
+  const { session: next, transfers } = applyStress(session, id, on);
+  commit(next);
+  emit(transfers);
+}
+
+export function setArchitectBias(bias: number): void {
+  if (!session) return;
+  commit({ ...session, architectBias: bias });
+}
+
+/* ---------- Lifeline ---------- */
+
+export function sealLifeline(): void {
+  if (!session) return;
+  const visited = session.visited.includes("lifeline")
+    ? session.visited
+    : [...session.visited, "lifeline" as Route];
+  const next = { ...session, visited };
+  commit(session.visited.includes("lifeline") ? next : withEvent(next, lifeline.sealed, "system"));
+}
+
+export function setNote(note: string): void {
+  if (!session) return;
+  commit({ ...session, note });
+}
+
+export function writeLastEvent(text: string): void {
+  if (!session) return;
+  const clean = text.trim();
+  if (!clean) return;
+  const next = withEvent(session, clean, "user");
+  commit(session.note === "" ? { ...next, note: clean } : next);
+}
+
+/** Archive the finished Lifeline and clear the session. */
+export function beginAnother(): void {
+  if (session) archiveLifeline({ ...lifelineData(session), sealedAt: new Date().toISOString() });
+  commit(null);
+}

@@ -11,6 +11,8 @@ export function loadSession(): Session | null {
     parsed.locks ??= [];
     parsed.pendingChildren ??= 0;
     parsed.userActions ??= 0;
+    parsed.armedOrder ??= [];
+    parsed.note ??= "";
     return parsed;
   } catch {
     return null;
@@ -23,5 +25,18 @@ export function saveSession(session: Session | null): void {
     else localStorage.removeItem(STORAGE_KEY);
   } catch {
     /* storage unavailable: memory only */
+  }
+}
+
+const ARCHIVE_KEY = "synchronize.v1.archive";
+
+export function archiveLifeline(entry: unknown): void {
+  try {
+    const raw = localStorage.getItem(ARCHIVE_KEY);
+    const list: unknown[] = raw ? JSON.parse(raw) : [];
+    list.push(entry);
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(list));
+  } catch {
+    /* storage unavailable */
   }
 }

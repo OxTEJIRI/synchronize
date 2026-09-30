@@ -42,6 +42,7 @@ export interface Actor {
   activity: number;
   isYou?: boolean;
   isGhost?: boolean;
+  fork?: boolean;
 }
 
 export interface Session {
@@ -65,6 +66,7 @@ export interface Session {
   locks: { ttl: number; amount: number }[];
   pendingChildren: number;
   userActions: number;
+  armedOrder: Stress[];
 }
 
 export const ERAS: Era[] = ["tribe", "nation", "web3", "sp"];
@@ -79,3 +81,12 @@ export interface Transfer {
   to: string;
   amount: number;
 }
+
+export const STRESSES: Stress[] = [
+  "capture",
+  "predation",
+  "sybil",
+  "flatten",
+  "fork",
+  "architects",
+];

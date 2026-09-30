@@ -29,9 +29,11 @@ interface Props {
 export function AppShell({ route, session, children }: Props) {
   const bare = route === "threshold";
   const showTicker = !bare && session !== null;
+  const simRoute = route === "energy" || route === "break";
+  const fork = !!session?.stresses.fork;
 
   return (
-    <div className={`shell ${bare ? "shell--bare" : ""}`}>
+    <div className={`shell ${bare ? "shell--bare" : ""} ${fork ? "shell--fork" : ""}`}>
       <a
         className="skip"
         href="#main"
@@ -82,14 +84,14 @@ export function AppShell({ route, session, children }: Props) {
       </header>
       <main
         id="main"
-        className={`main ${route === "energy" ? "main--wide" : ""}`}
+        className={`main ${simRoute ? "main--wide" : ""}`}
         tabIndex={-1}
-        key={route}
+        key={simRoute ? "sim" : route}
       >
         {children}
       </main>
       {bare && <p className="footer-mark">{brand.footer}</p>}
-      {showTicker && <Ticker events={session.events} />}
+      {showTicker && <Ticker events={session.events} fork={fork} />}
     </div>
   );
 }
