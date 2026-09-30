@@ -17,6 +17,17 @@ export function ActClock({ session }: { session: Session }) {
   const prev = idx > 0 ? ERAS[idx - 1] : null;
   const next = idx < ERAS.length - 1 ? ERAS[idx + 1] : null;
 
+  /** Back/Next sit below the fold on phones, so bring the new trial into view. */
+  const step = (to: Era | null) => {
+    if (!to) return;
+    setEra(to);
+    if (window.innerWidth < 960) {
+      requestAnimationFrame(() =>
+        document.querySelector(".clock__stage")?.scrollIntoView({ block: "start", behavior: "smooth" }),
+      );
+    }
+  };
+
   useEffect(() => {
     visitEra(era, actI.eras[era].label);
   }, [era]);
@@ -64,10 +75,10 @@ export function ActClock({ session }: { session: Session }) {
       <EraScrubber era={era} visited={session.erasVisited} onSelect={setEra} />
 
       <div className="eranav">
-        <HairlineButton disabled={!prev} onClick={() => prev && setEra(prev)}>
+        <HairlineButton disabled={!prev} onClick={() => step(prev)}>
           {common.arrowBack} {actIStrings.back}
         </HairlineButton>
-        <HairlineButton disabled={!next} onClick={() => next && setEra(next)}>
+        <HairlineButton disabled={!next} onClick={() => step(next)}>
           {actIStrings.next} {common.arrow}
         </HairlineButton>
       </div>
