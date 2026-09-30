@@ -231,6 +231,7 @@ export const about = {
 
 export const common = {
   arrow: "→",
+  arrowBack: "←",
   loading: "…",
 };
 
@@ -264,6 +265,9 @@ export const actIStrings = {
   dragHint: "Drag the circle.",
   tokenHint: "Tokens moved. People did not.",
   resendHint: "Sent. Try again, or move on.",
+  advancing: "On to the next era…",
+  back: "Back",
+  next: "Next era",
 };
 
 

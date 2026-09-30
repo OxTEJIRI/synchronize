@@ -13,6 +13,9 @@ export function ActClock({ session }: { session: Session }) {
   const [era, setEra] = useState<Era>("tribe");
   const info = actI.eras[era];
   const done = isActIComplete(session);
+  const idx = ERAS.indexOf(era);
+  const prev = idx > 0 ? ERAS[idx - 1] : null;
+  const next = idx < ERAS.length - 1 ? ERAS[idx + 1] : null;
 
   useEffect(() => {
     visitEra(era, actI.eras[era].label);
@@ -47,6 +50,7 @@ export function ActClock({ session }: { session: Session }) {
           key={era}
           era={era}
           sharedEvent={events.sharedEvent}
+          onComplete={next ? () => setEra(next) : undefined}
           onFire={(e, extra) => fireTrial(e, actI.eras[e].label, extra)}
         />
         <aside className="caption">
@@ -58,6 +62,15 @@ export function ActClock({ session }: { session: Session }) {
       </div>
 
       <EraScrubber era={era} visited={session.erasVisited} onSelect={setEra} />
+
+      <div className="eranav">
+        <HairlineButton disabled={!prev} onClick={() => prev && setEra(prev)}>
+          {common.arrowBack} {actIStrings.back}
+        </HairlineButton>
+        <HairlineButton disabled={!next} onClick={() => next && setEra(next)}>
+          {actIStrings.next} {common.arrow}
+        </HairlineButton>
+      </div>
 
       <div className="clock__continue">
         <p className="clock__gate">{done ? actIStrings.gateDone : actIStrings.gate}</p>

@@ -29,9 +29,13 @@ interface Props {
   era: Era;
   onFire: (era: Era, extra?: string) => void;
   sharedEvent: string;
+  /** Called once the outcome has been on screen long enough to move on. */
+  onComplete?: () => void;
 }
 
-export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
+const ADVANCE_MS = 2200;
+
+export function TrialCanvas({ era, onFire, sharedEvent, onComplete }: Props) {
   const [aware, setAware] = useState<number[]>([]);
   const [tokens, setTokens] = useState(false);
   const [sent, setSent] = useState(false);
@@ -39,14 +43,30 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
   const [circle, setCircle] = useState({ x: 250, y: 160 });
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
+  const [advancing, setAdvancing] = useState(false);
   const timer = useRef<number | null>(null);
+  const advance = useRef<number | null>(null);
 
   useEffect(
     () => () => {
       if (timer.current !== null) window.clearInterval(timer.current);
+      if (advance.current !== null) window.clearTimeout(advance.current);
     },
     [],
   );
+
+  const cancelAdvance = () => {
+    if (advance.current !== null) window.clearTimeout(advance.current);
+    advance.current = null;
+    setAdvancing(false);
+  };
+
+  const finish = () => {
+    if (!onComplete) return;
+    cancelAdvance();
+    setAdvancing(true);
+    advance.current = window.setTimeout(onComplete, ADVANCE_MS);
+  };
 
   const toLocal = (e: ReactPointerEvent) => {
     const svg = svgRef.current;
@@ -59,12 +79,14 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
   };
 
   const fire = () => {
+    cancelAdvance();
     setSent(true);
     if (era === "tribe") {
       setAware(
         ALL.filter((i) => Math.hypot(NODES[i].x - circle.x, NODES[i].y - circle.y) <= CIRCLE_R),
       );
       onFire(era);
+      finish();
     } else if (era === "nation") {
       if (timer.current !== null) window.clearInterval(timer.current);
       setAware(ALL.filter((i) => NODES[i].x < BORDER_X));
@@ -77,12 +99,14 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
           if (timer.current !== null) window.clearInterval(timer.current);
           timer.current = null;
           setAware(ALL);
+          finish();
         }
       }, 60);
       onFire(era);
     } else if (era === "web3") {
       setTokens(true);
       onFire(era);
+      finish();
     } else {
       setAware(ALL);
       onFire(era, sharedEvent);
@@ -97,7 +121,8 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
 
   const pending = era === "nation" && sent && progress < 1;
   let status = "";
-  if (era === "tribe" && !sent) status = actIStrings.dragHint;
+  if (advancing) status = actIStrings.advancing;
+  else if (era === "tribe" && !sent) status = actIStrings.dragHint;
   else if (pending) status = actIStrings.ministryHint;
   else if (era === "web3" && sent) status = actIStrings.tokenHint;
   else if (era === "sp" && sent) status = "";
@@ -161,6 +186,7 @@ export function TrialCanvas({ era, onFire, sharedEvent }: Props) {
             aria-label={actIStrings.dragHint}
             aria-valuetext={`${circle.x.toFixed(0)}, ${circle.y.toFixed(0)}`}
             onPointerDown={(e) => {
+              cancelAdvance();
               dragging.current = true;
               (e.target as Element).setPointerCapture?.(e.pointerId);
             }}

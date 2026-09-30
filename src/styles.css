@@ -693,3 +693,10 @@ button {
   to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 .plaque__rings { animation-name: plaque-spin; }
+
+.eranav { display: flex; justify-content: center; gap: 12px; }
+.eranav .btn { min-width: 160px; }
+@media (max-width: 959px) {
+  .eranav { width: 100%; }
+  .eranav .btn { flex: 1; min-width: 0; padding: 0 12px; }
+}
