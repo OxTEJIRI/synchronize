@@ -222,12 +222,6 @@ export const actIStrings = {
   resendHint: "Sent. Try again, or move on.",
 };
 
-export const societyStub = {
-  kicker: "Act II",
-  title: "Spin a Society",
-  body: "The Synchronized State is not minted yet. This screen arrives in the next build.",
-  back: "Back to Act I",
-};
 
 export const notFound = {
   title: "Nothing on the Timeline here.",
@@ -236,4 +230,52 @@ export const notFound = {
 
 export const resume = {
   as: (name: string) => `Resume as ${name}`,
+};
+
+export const breakStub = {
+  kicker: "Act III · Break It",
+  title: "The same instance. Worse assumptions.",
+  body: "The stress toggles arrive in the next build.",
+  back: "Back to Energy",
+};
+
+export const societyCopy = {
+  namePrefixes: ["AURORA", "KEPLER", "HELIX", "ORION", "LYRA", "VEGA", "NOVA", "CASSINI", "TYCHO", "ARGO"],
+  chooseRange: "Choose three to six.",
+  selected: (n: number) => `${n} of 6 bound`,
+  reroll: "New name",
+};
+
+export const energyCopy = {
+  pause: "Pause",
+  resume: "Resume",
+  help: "What is Energy?",
+  close: "Close",
+  fieldLabel: "Actors and Energy",
+  you: (name: string) => `YOU / ${name}`,
+  reserveShort: (n: number) => `Reserve ${n.toFixed(1)}E`,
+  total: (n: number) => `Total ${n.toFixed(1)}E`,
+  youLine: (e: number, rank: number, n: number) =>
+    `YOU  ${e.toFixed(1)}E   rank ${rank}/${n}`,
+  pyramidLabel: "Energy distribution",
+  tiers: ["Core", "Catalysts", "Contributors", "Participants", "Observers"],
+  actionsLabel: "Actions",
+  gate: "Let three Timeslots pass and take one action.",
+  locked: (n: number) => `${n.toFixed(1)}E locked in a rule`,
+  npcNames: ["Kade", "Orin", "Sela", "Voss", "Amara", "Quin", "Nia", "Tavi", "Lior", "Mero", "Bram", "Ilse", "Joss", "Rhea", "Sol", "Dara"],
+  childNames: ["Wren", "Pike", "Odel", "Fen", "Yara", "Cato"],
+};
+
+export const simEvents = {
+  minted: (name: string, vfs: string) => `Minted ${name}. SSC binds ${vfs}.`,
+  delta: (n: number) => `${n >= 0 ? "+" : "−"}${Math.abs(n).toFixed(1)}E`,
+  parented: (who: string) => `${who} parented a new Actor`,
+  born: (who: string) => `${who} joined the Timeline`,
+  hunted: (a: string, b: string) => `${a} hunted ${b}`,
+  curatedWell: (who: string) => `${who} curated the flood map`,
+  curatedHollow: (who: string) => `${who} curated a hollow claim`,
+  governed: (who: string) => `${who} risked Energy on a rule`,
+  governWon: (who: string) => `${who}'s rule held`,
+  governLost: (who: string) => `${who}'s rule was slashed`,
+  idle: (who: string) => `${who} went idle`,
 };

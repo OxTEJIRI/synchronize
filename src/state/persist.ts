@@ -8,6 +8,9 @@ export function loadSession(): Session | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Session;
     if (typeof parsed?.actorName !== "string" || !parsed.bornAt) return null;
+    parsed.locks ??= [];
+    parsed.pendingChildren ??= 0;
+    parsed.userActions ??= 0;
     return parsed;
   } catch {
     return null;

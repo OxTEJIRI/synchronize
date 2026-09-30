@@ -80,7 +80,12 @@ export function AppShell({ route, session, children }: Props) {
         )}
         <ClockFace />
       </header>
-      <main id="main" className="main" tabIndex={-1} key={route}>
+      <main
+        id="main"
+        className={`main ${route === "energy" ? "main--wide" : ""}`}
+        tabIndex={-1}
+        key={route}
+      >
         {children}
       </main>
       {bare && <p className="footer-mark">{brand.footer}</p>}

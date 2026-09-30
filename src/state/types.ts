@@ -62,6 +62,20 @@ export interface Session {
   paused: boolean;
   note: string;
   visited: Route[];
+  locks: { ttl: number; amount: number }[];
+  pendingChildren: number;
+  userActions: number;
 }
 
 export const ERAS: Era[] = ["tribe", "nation", "web3", "sp"];
+
+export const TOTAL_E = 100;
+export const RESERVE_ID = "reserve";
+
+export type UserAction = "parent" | "hunt" | "curate" | "govern" | "idle";
+
+export interface Transfer {
+  from: string;
+  to: string;
+  amount: number;
+}

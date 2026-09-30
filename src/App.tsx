@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { AppShell } from "./components/AppShell";
 import { ActClock } from "./screens/ActClock";
-import { NotFound, SocietyStub } from "./screens/Placeholders";
+import { ActEnergy } from "./screens/ActEnergy";
+import { ActSociety } from "./screens/ActSociety";
+import { BreakStub, NotFound } from "./screens/Placeholders";
 import { Threshold } from "./screens/Threshold";
 import { go, useRoute } from "./state/router";
 import { canVisit, markVisited, useSession } from "./state/store";
@@ -23,7 +25,9 @@ export function App() {
   else if (allowed) {
     if (route === "threshold") screen = <Threshold session={session} />;
     else if (route === "clock" && session) screen = <ActClock session={session} />;
-    else if (route === "society") screen = <SocietyStub />;
+    else if (route === "society" && session) screen = <ActSociety session={session} />;
+    else if (route === "energy" && session) screen = <ActEnergy session={session} />;
+    else if (route === "break") screen = <BreakStub />;
   }
 
   return (

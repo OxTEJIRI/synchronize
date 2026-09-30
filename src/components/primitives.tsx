@@ -39,3 +39,53 @@ export function RingBackdrop() {
 export function TypeLockup({ size = "sm" }: { size?: "sm" | "hero" }) {
   return <span className={`lockup lockup--${size}`}>SYNCHRONIZE</span>;
 }
+
+interface VFChipProps {
+  label: string;
+  help: string;
+  selected: boolean;
+  shaking?: boolean;
+  onToggle: () => void;
+}
+
+export function VFChip({ label, help, selected, shaking, onToggle }: VFChipProps) {
+  return (
+    <button
+      type="button"
+      className={`chip ${selected ? "is-selected" : ""} ${shaking ? "is-shaking" : ""}`}
+      aria-pressed={selected}
+      onClick={onToggle}
+    >
+      <span className="chip__label">{label}</span>
+      <span className="chip__help">{help}</span>
+    </button>
+  );
+}
+
+interface KnobProps {
+  label: string;
+  help: string;
+  value: number;
+  onChange: (v: number) => void;
+}
+
+export function Knob({ label, help, value, onChange }: KnobProps) {
+  return (
+    <label className="knob">
+      <span className="knob__head">
+        <span className="label">{label}</span>
+        <span className="knob__value">{value.toFixed(2)}</span>
+      </span>
+      <input
+        className="knob__range"
+        type="range"
+        min={0}
+        max={1}
+        step={0.01}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+      <span className="knob__help">{help}</span>
+    </label>
+  );
+}
