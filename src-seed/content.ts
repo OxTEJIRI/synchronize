@@ -1,0 +1,185 @@
+/**
+ * Seed file — place at src/copy/content.ts
+ * All user-facing copy. Claude Code should expand, not replace, this contract.
+ */
+
+export const brand = {
+  name: "SYNCHRONIZE",
+  eyebrow: "A civic operating system you can feel",
+  footer: "Society Protocol  ·  Creator Contest",
+  thesis:
+    "Society Protocol is a clock that learned how to be a state — and every clock can be captured.",
+};
+
+export const threshold = {
+  placeholder: "What should we call you in this instance?",
+  enter: "Enter the Timeline",
+  anonymous: "or continue as Anonymous Actor",
+  defaultName: "Anonymous Actor",
+};
+
+export const nav = {
+  clock: "I Clock",
+  society: "II Society",
+  break: "III Break",
+  lifeline: "Lifeline",
+};
+
+export const actI = {
+  kicker: "Act I",
+  continue: "Continue to Act II",
+  send: {
+    tribe: "Send the order",
+    nation: "File the request",
+    web3: "Mint the token",
+    sp: "Write the Event",
+  },
+  eras: {
+    tribe: {
+      label: "Tribe",
+      what: "One place, one sky.",
+      failure: "Coordination dies at the horizon.",
+      dim: "1D clock",
+    },
+    nation: {
+      label: "Nation State",
+      what: "Double-entry books, borders, delayed law.",
+      failure: "The state updates next fiscal year.",
+      dim: "2D ledger",
+    },
+    web3: {
+      label: "Web3",
+      what: "A shared ledger of things.",
+      failure: "The objects synchronized. The people did not.",
+      dim: "3D objects",
+    },
+    sp: {
+      label: "Society Protocol",
+      what: "People, value, and events on one Timeline.",
+      failure: "Failure of this era: none yet. Shared reality is one Timeline.",
+      dim: "4D society",
+    },
+  },
+};
+
+export const actII = {
+  kicker: "Act II · Spin a Society",
+  title: "Instantiate a Synchronized State",
+  nameLabel: "Society name",
+  vfLabel: "Value Functions",
+  paramsLabel: "Parameters",
+  decayLabel: "Energy decay",
+  decayHelp: "Idle Energy leaks this fast",
+  huntLabel: "Hunt pressure",
+  huntHelp: "How hard the Hunt bites",
+  mint: "Mint this Synchronized State",
+  ssc: "The SSC is the ruleset every Actor implicitly accepts.",
+  tooMany: "A society that values everything values nothing.",
+  energyTitle: "Energy is flowing",
+  energyHelp:
+    "Energy is not money as you’ve known it. It is what this society thinks you are worth right now. It cannot be created or destroyed — only moved.",
+  stressCta: "Stress this society",
+  actions: {
+    parenting: { label: "Parent", hint: "Invite a new Actor" },
+    hunting: { label: "Hunt", hint: "Take from the idle" },
+    curation: { label: "Curate", hint: "Stake on what matters" },
+    governance: { label: "Govern", hint: "Risk Energy on a rule" },
+    idle: { label: "Idle", hint: "Conserve — and leak" },
+  },
+};
+
+export const vfs: Record<
+  string,
+  { label: string; help: string }
+> = {
+  parenting: {
+    label: "Parenting",
+    help: "Invite a new Actor. Spend Energy now; harvest later if they thrive.",
+  },
+  hunting: {
+    label: "Hunting",
+    help: "Each Timeslot, idle Energy can be taken by the active.",
+  },
+  property: {
+    label: "Property",
+    help: "Own programmable objects inside the instance.",
+  },
+  curation: {
+    label: "Curation",
+    help: "Stake Energy on what is worth seeing.",
+  },
+  governance: {
+    label: "Governance",
+    help: "Risk Energy to change the rules.",
+  },
+  organizations: {
+    label: "Organizations",
+    help: "Bind Actors into a named body.",
+  },
+  communication: {
+    label: "Communication",
+    help: "Publish Events visible to the whole Timeline.",
+  },
+  farming: {
+    label: "Farming",
+    help: "Slow, compounding Energy from tending shared goods.",
+  },
+  portal: {
+    label: "Portal",
+    help: "Bridge value to another instance.",
+  },
+};
+
+export const actIII = {
+  kicker: "Act III · Break It",
+  title: "The same instance. Worse assumptions.",
+  seal: "Seal the Lifeline",
+  stresses: {
+    capture: {
+      label: "Governor capture",
+      card: "Energy is no longer a map of value. It is a map of who set the Functions.",
+    },
+    predation: {
+      label: "Hunt as predation",
+      card: "The Hunt stops sorting the idle. It starts farming the quiet.",
+    },
+    sybil: {
+      label: "Sybil crack",
+      card: "Identity was the pillar. If it cracks, every other pillar lies.",
+    },
+    flatten: {
+      label: "Culture flatten",
+      card: "One SSC, many peoples. The contract can erase the local.",
+    },
+    fork: {
+      label: "Shared-reality fork",
+      card: "Two clocks. Two histories. The bind is the thing that broke.",
+    },
+    architects: {
+      label: "Who writes the VFs?",
+      card: "Governance of the Functions is the real throne.",
+    },
+  },
+};
+
+export const lifeline = {
+  kicker: "Lifeline",
+  defaultNote: "The clock learned to be a state.",
+  download: "Download PNG",
+  copy: "Copy summary",
+  lastEvent: "Write a last Event",
+  again: "Begin another instance",
+  none: "None armed",
+  about: "What is Society Protocol?",
+};
+
+export const about = {
+  title: "About this workshop",
+  unofficial:
+    "Unofficial workshop. Not affiliated as a core-team product. Built for the Society Protocol Creator Contest.",
+  links: {
+    home: "https://societyprotocol.io/",
+    whitepaper: "https://societyprotocol.io/whitepaper/",
+    glossary: "https://societyprotocol.io/glossary/",
+  },
+};
