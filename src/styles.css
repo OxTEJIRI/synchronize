@@ -8,6 +8,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-padding-bottom: 160px;
+}
+
 html,
 body,
 #root {
@@ -113,6 +117,9 @@ button {
 }
 
 .chrome__mark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   text-decoration: none;
   color: var(--cream);
 }
@@ -180,7 +187,7 @@ button {
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--cream-mute);
+  color: var(--cream-dim);
   white-space: pre;
 }
 
@@ -265,7 +272,7 @@ button {
   color: var(--cream);
   transition: border-color 240ms var(--ease);
 }
-.field__input::placeholder { color: var(--cream-mute); }
+.field__input::placeholder { color: var(--cream-dim); }
 .field__input:focus { outline: none; border-color: var(--gold); }
 .field__input:focus-visible { outline: 1px solid var(--gold); outline-offset: 3px; }
 
@@ -309,19 +316,25 @@ button {
   bottom: 0;
   z-index: 5;
   display: flex;
-  align-items: center;
-  gap: 20px;
-  height: 52px;
+  flex-direction: column;
   padding: 0 32px;
-  background: rgba(7, 7, 6, 0.92);
+  background: rgba(7, 7, 6, 0.94);
   border-top: 1px solid var(--line);
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.04em;
-  overflow: hidden;
 }
+.ticker__row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 44px;
+  min-width: 0;
+}
+.ticker--fork .ticker__row + .ticker__row { border-top: 1px solid var(--line); }
 .ticker__label {
   flex: none;
+  min-width: 12px;
   font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 500;
@@ -329,28 +342,36 @@ button {
   text-transform: uppercase;
   color: var(--gold);
 }
+/* Newest Event sits at the right edge; Events that do not fit wrap out of sight instead of being cut mid-line. */
 .ticker__list {
   flex: 1;
   min-width: 0;
+  height: 20px;
   display: flex;
-  justify-content: flex-end;
-  gap: 32px;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 0 32px;
   margin: 0;
   padding: 0;
   list-style: none;
   overflow: hidden;
-  white-space: nowrap;
-  mask-image: linear-gradient(to right, transparent, #000 12%);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%);
+  line-height: 20px;
 }
 .ticker__item {
-  flex: none;
+  flex: 0 1 auto;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--cream-dim);
   animation: slide-in 480ms var(--ease) both;
 }
-.ticker__item:last-child { color: var(--cream); }
-.ticker__item--stress { color: var(--danger); }
-.ticker__t { margin-right: 10px; color: var(--cream-mute); }
+.ticker__item:first-child { color: var(--cream); }
+.ticker .ticker__item.ticker__item--stress,
+.ticker .ticker__item.is-b,
+.ticker .ticker__item.is-b .ticker__t { color: var(--danger); }
+.ticker__t { margin-right: 10px; color: var(--cream-dim); opacity: 0.8; }
 
 @keyframes slide-in {
   from { opacity: 0; transform: translateX(24px); }
@@ -535,7 +556,7 @@ button {
 .scrubber__stop.is-current .scrubber__pip { background: var(--gold); border-color: var(--gold); }
 .scrubber__stop.is-current { color: var(--gold); }
 .scrubber__label { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; }
-.scrubber__n { margin-right: 6px; font-family: var(--font-mono); color: var(--cream-mute); }
+.scrubber__n { margin-right: 6px; font-family: var(--font-mono); color: var(--cream-dim); }
 
 .clock__continue {
   display: flex;
@@ -556,6 +577,7 @@ button {
   .chrome { padding: 12px 20px; }
   .main { padding: 24px 20px 96px; }
   .ticker { padding: 0 20px; }
+  .ticker__row { height: 44px; }
   .navlink__long { display: none; }
   .navlink__short { display: inline; }
   .navlink { padding: 0 10px; min-width: 44px; }
@@ -569,7 +591,6 @@ button {
   .trial__count, .trial__bar .ministry { grid-column: 1; grid-row: auto; text-align: left; }
   .trial__bar .btn { width: 100%; }
   .ticker__label { display: none; }
-  .ticker__item:nth-last-child(n + 3) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

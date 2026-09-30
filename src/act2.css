@@ -76,7 +76,7 @@
   transition: width 600ms var(--ease);
 }
 .tier__sum { font-family: var(--font-mono); font-size: 11px; color: var(--cream); }
-.tier__label { font-size: 11px; letter-spacing: 0.08em; color: var(--cream-mute); }
+.tier__label { font-size: 11px; letter-spacing: 0.08em; color: var(--cream-dim); }
 .tier.has-you .tier__bar { background: var(--gold); outline: 1px solid var(--gold-hot); outline-offset: 2px; }
 .tier.has-you .tier__sum { color: var(--bg); }
 .tier.has-you .tier__label { color: var(--gold); }

@@ -5,7 +5,8 @@ const VISIBLE = 6;
 
 function Row({ events, track }: { events: TimelineEvent[]; track?: string }) {
   const start = Math.max(0, events.length - VISIBLE);
-  const shown = events.slice(start);
+  // Newest first: the list is laid out right-to-left so the latest Event stays visible.
+  const shown = events.slice(start).reverse();
   return (
     <div className="ticker__row">
       <span className="ticker__label">{track ?? shell.tickerLabel}</span>
@@ -13,7 +14,7 @@ function Row({ events, track }: { events: TimelineEvent[]; track?: string }) {
         {shown.length === 0 && <li className="ticker__item">{shell.tickerEmpty}</li>}
         {shown.map((e, i) => (
           <li
-            key={`${track}-${events.length - shown.length + i}-${e.t}`}
+            key={`${track}-${events.length - 1 - i}`}
             className={`ticker__item ticker__item--${e.kind} ${e.track === "B" ? "is-b" : ""}`}
           >
             <span className="ticker__t">t+{e.t}</span>

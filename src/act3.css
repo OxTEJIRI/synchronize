@@ -57,7 +57,7 @@
 .sscchips.is-locked .sscchip {
   border-style: dashed;
   border-color: var(--line-strong);
-  color: var(--cream-mute);
+  color: var(--cream-dim);
   pointer-events: none;
 }
 .sscchips.is-locked .label::after { content: " · locked"; color: var(--danger); }
@@ -75,22 +75,13 @@
 .critique__copy { font-family: var(--font-display); font-size: 22px; line-height: 1.3; }
 .critique__copy--idle { font-family: var(--font-ui); font-size: 14px; color: var(--cream-dim); }
 .critique__active { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.critique__active .label { color: var(--danger); }
+.critique__active .label { display: flex; align-items: center; gap: 8px; }
+.critique__active .label::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--danger); }
 
 .is-danger { color: var(--danger) !important; }
 
 /* dual ticker under a fork */
-.shell .ticker { flex-direction: column; align-items: stretch; justify-content: center; gap: 0; padding-top: 0; padding-bottom: 0; }
-.ticker__row { display: flex; align-items: center; gap: 20px; height: 52px; min-width: 0; }
-.shell .ticker--fork { height: auto; }
-.ticker--fork .ticker__row { height: 40px; }
-.ticker--fork .ticker__row + .ticker__row { border-top: 1px solid var(--line); }
-.shell .ticker--fork .ticker__label { display: inline; width: 12px; }
-.ticker__item.is-b { color: var(--danger); }
-.ticker__item.is-b .ticker__t { color: var(--danger-dim); }
 .shell--fork .main { padding-bottom: 140px; }
-
-.ticker__label { min-width: 12px; }
 
 /* ---------- lifeline ---------- */
 
@@ -132,16 +123,16 @@
 .about__h { font-size: 28px; }
 .about__list { margin: 0; display: flex; flex-direction: column; gap: 14px; }
 .about__list dd { margin: 4px 0 0; color: var(--cream-dim); }
+.about__links a { display: inline-flex; align-items: center; min-height: 44px; }
 .about__links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .about a { color: var(--gold); text-decoration: none; }
 .about a:hover { color: var(--gold-hot); text-decoration: underline; }
-.about__note { font-size: 14px; color: var(--cream-mute); }
+.about__note { font-size: 14px; color: var(--cream-dim); }
 a.ghostlink { display: inline-flex; align-items: center; text-decoration: none; }
 
 @media (max-width: 959px) {
   .energy__grid--break { grid-template-columns: 1fr; }
   .plaque { padding: 24px; }
   .lifeline__event { flex-direction: column; }
-  .ticker__row { height: 48px; }
-  .ticker--fork .ticker__row { height: 40px; }
+  .shell .ticker--fork .ticker__label { display: inline; }
 }

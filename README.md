@@ -23,7 +23,12 @@ npm install
 npm run dev
 ```
 
-Static host: GitHub Pages from the Vite `dist` output.
+```bash
+npm run build     # type-check + production build into dist/
+npm run preview   # serves at http://localhost:4173/synchronize/
+```
+
+Static host: GitHub Pages from the Vite `dist` output. `vite.config.ts` sets `base: "/synchronize/"`, so the site expects to live at `https://<user>.github.io/synchronize/`. Routing is hash-based, so no rewrite rules are needed.
 
 ## What this is not
 
